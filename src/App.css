@@ -107,6 +107,7 @@ li {
 
 #message-container {
   height: 300px;
+  width: 80%;
   overflow-y: scroll;
   border: 1px solid #ccc;
   padding: 10px;
@@ -131,4 +132,26 @@ button {
   border-radius: 5px;
   /* text-shadow: 5px 1px 1px teal; */
   background-color: rgba(128, 128, 128, 0.133);
+}
+
+p {
+  color: beige;
+}
+
+.message {
+  margin-bottom: 8px;
+  padding: 8px;
+  font-size: 15px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.sender {
+  align-self: flex-end;
+  background-color: #cce5ff28; /* Light blue */
+}
+
+.message-sender {
+  font-size: 13px;
+  color: beige;
 }

@@ -1,36 +1,63 @@
-import React, { useState } from "react";
-import { HiArrowSmRight } from "react-icons/hi";
+import React, { useState, useEffect } from "react";
 
-const ChatRoom = () => {
+const ChatRoom = ({ name, roomName, socket }) => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]); // State variable to store messages
-  const handleChange = (e) => {
-    setMessage(e.target.value); // Update message state with input value
-  };
+  const [messages, setMessages] = useState([]);
 
-  const sendHandler = () => {
+  useEffect(() => {
+    socket.on("message", (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    socket.on("notification", (notification) => {
+      alert(notification);
+    });
+
+    return () => {
+      socket.off("message");
+      socket.off("notification");
+    };
+  }, [socket]);
+
+  const handleMessageSend = (e) => {
+    e.preventDefault();
     if (message.trim() === "") return;
-    setMessages([...messages, message]);
-    setMessage(""); // Clear the input field after sending the message
+    socket.emit("messageRoom", {
+      room: roomName,
+      message: {
+        sender: name,
+        text: message,
+      },
+    });
+    setMessage("");
   };
 
   return (
     <div className="chatroom">
-      <div id="chat-container">
-        <div id="message-container">
-          {messages.map((msg, index) => (
-            <li key={index}>{msg}</li>
-          ))}
-        </div>
+      <p>
+        Hi {name}, welcome to {roomName}!
+      </p>
+      <div id="message-container">
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={msg.sender === name ? "message sender" : "message"}
+          >
+            <div className="message-sender">{msg.sender}</div>
+            <div className="message-text">{msg.text}</div>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleMessageSend}>
         <input
           type="text"
           id="message-input"
           placeholder="Type your message..."
           value={message}
-          onChange={handleChange}
+          onChange={(e) => setMessage(e.target.value)}
         />
-        <button onClick={sendHandler}>Send</button>
-      </div>
+        <button type="submit">Send</button>
+      </form>
     </div>
   );
 };
